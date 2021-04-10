@@ -22,24 +22,26 @@ const Stream=require("stream");
 /**
  * @param {string} text
  * @param {Language} lang
- * @param {number} speed
  */
-function downloadFromInfoCallback(text, lang, speed, stream){
-    googleTTS(text, lang, speed).then((url)=>{
-        const request = https.get(url, function(response,err) {
-            response.pipe(stream);
-        });
-    });
+function downloadFromInfoCallback(text, lang, stream) {
+    const url = googleTTS.getAudioUrl(text, {
+        lang: lang,
+        slow: false,
+        host: 'https://translate.google.com',
+    })
+    const request = https.get(url, function (response, err) {
+        if(err)
+            return console.log(err)
+        response.pipe(stream)
+    })
 }
-
 /**
  * @param {string} text
  * @param {Language} lang
- * @param {number} speed
  */
-function getVoiceStream(text, lang="en-GB", speed=1){
+function getVoiceStream(text, lang="en-GB"){
     const stream=new Stream.PassThrough();
-    downloadFromInfoCallback(text,lang,speed,stream);
+    downloadFromInfoCallback(text,lang,stream);
     return stream;
 }
 
@@ -47,12 +49,11 @@ function getVoiceStream(text, lang="en-GB", speed=1){
  * @param {string} filePath
  * @param {string} text
  * @param {Language} lang
- * @param {number} speed
  */
-function saveToFile(filePath, text, lang="en-GB", speed=1){
+function saveToFile(filePath, text, lang="en-GB"){
     const stream=new Stream.PassThrough();
     const writeStream=fs.createWriteStream(filePath);
-    downloadFromInfoCallback(text,lang,speed,stream);
+    downloadFromInfoCallback(text,lang,stream);
     stream.pipe(writeStream);
     stream.on("end",()=>writeStream.close());
 }

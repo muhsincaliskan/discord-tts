@@ -14,6 +14,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "google-tts-api": "0.0.6"
+    "google-tts-api": "^2.0.2"
   }
 }
